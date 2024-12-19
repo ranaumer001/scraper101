@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"  # Expose port 3000
+    volumes:
+      - .:/usr/src/app  # Mount the project folder to the container (optional for development)
+    environment:
+      - NODE_ENV=production
+    command: npm start  # Command to run your app

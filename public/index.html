@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Scraper</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* General styling */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f8f0f6; /* Light pink background */
+      margin: 0;
+      padding: 0;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* Full height to center content */
+    }
+    h1 {
+      color: #e91e63; /* Pink color for the header */
+      margin-top: 50px;
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    /* Container styling */
+    .container {
+      width: 90%;
+      max-width: 800px;
+      text-align: center;
+      padding: 30px;
+      background-color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Input and button styling */
+    #url {
+      width: 80%;
+      padding: 12px 15px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      transition: border 0.3s ease-in-out;
+    }
+    #url:focus {
+      outline: none;
+      border-color: #e91e63; /* Pink border on focus */
+    }
+
+    #start {
+      background-color: #e91e63; /* Pink button */
+      color: white;
+      padding: 12px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      width: 50%;
+    }
+    #start:hover {
+      background-color: #d81b60; /* Darker pink on hover */
+    }
+
+    /* Progress bar styling */
+    #progress {
+      width: 80%;
+      margin: 30px auto;
+      height: 20px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      background-color: #e0e0e0;
+      display: none;
+    }
+    #progress-bar {
+      height: 100%;
+      background-color: #e91e63; /* Pink progress bar */
+      width: 0;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+      line-height: 20px;
+      font-weight: bold;
+    }
+
+    /* Output text and download button styling */
+    #output {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-radius: 5px;
+      white-space: pre-wrap;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+      font-weight: bold; /* Bold text in the output */
+      color: #e91e63; /* Pink-colored text */
+      width: 80%; /* Ensure the output box fits within the container */
+      max-width: 100%; /* Prevent overflow beyond the container */
+      box-sizing: border-box; /* Include padding in width calculation */
+    }
+    #download {
+      display: none;
+      margin-top: 30px;
+      padding: 12px 20px;
+      background-color: #e91e63;
+      color: white;
+      font-size: 18px;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    #download:hover {
+      background-color: #d81b60;
+    }
+
+    /* Small screen responsiveness */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 30px;
+      }
+      #start {
+        width: 80%;
+      }
+      #url {
+        width: 80%;
+      }
+      #output {
+        width: 90%; /* Adjust width for small screens */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Web Scraper</h1>
+    <input type="text" id="url" placeholder="Enter Google Maps URL">
+    <button id="start">Start Scraping</button>
+
+    <div id="progress">
+      <div id="progress-bar">0%</div>
+    </div>
+
+    <div id="output"></div>
+    <a id="download" href="#" download="updated_business_details.csv">Download CSV</a>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    document.getElementById("start").addEventListener("click", () => {
+      const url = document.getElementById("url").value;
+      if (!url) {
+        alert("Please enter a URL!");
+        return;
+      }
+
+      fetch(`/start-scraping?url=${encodeURIComponent(url)}`, { method: "POST" })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to start scraping");
+          }
+          document.getElementById("output").textContent = "Scraping started...";
+        })
+        .catch((error) => {
+          document.getElementById("output").textContent = error.message;
+        });
+    });
+
+    socket.on("progress", (message) => {
+      const output = document.getElementById("output");
+      output.textContent += `\n${message}`;
+      output.scrollTop = output.scrollHeight; // Scroll to the bottom
+
+      // Update progress bar
+      const progressBar = document.getElementById("progress-bar");
+      let width = parseInt(progressBar.style.width) || 0;
+      progressBar.style.width = Math.min(width + 10, 100) + "%";
+      progressBar.textContent = progressBar.style.width;
+    });
+
+    socket.on("done", (message) => {
+      const output = document.getElementById("output");
+      output.textContent += `\n${message}`;
+
+      const download = document.getElementById("download");
+      download.style.display = "block";
+      download.href = "/updated_business_details.csv"; // Assume CSV is in the public folder
+    });
+  </script>
+</body>
+</html>
