@@ -94,7 +94,8 @@ puppeteer.use(StealthPlugin());
     const browser2 = await puppeteer.launch({ executablePath: '/snap/chromium/current/usr/lib/chromium-browser/chrome', headless: true, args: [
     '--no-sandbox',  // Disable the sandbox (use carefully)
     '--disable-setuid-sandbox',  // Disable the setuid sandbox (for some environments)
-    '--disable-gpu'  // Disable GPU hardware acceleration (can help with some systems)] });
+    '--disable-gpu'  // Disable GPU hardware acceleration (can help with some systems)
+    ] });
     const page2 = await browser2.newPage();
 
     for (let i = 0; i < businessLinks.length; i++) {
