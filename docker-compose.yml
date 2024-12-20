@@ -4,9 +4,13 @@ services:
   web:
     build: .
     ports:
-      - "3000:3000"  # Expose port 3000
+      - "80:80"  # Expose port 80
     volumes:
       - .:/usr/src/app  # Mount the project folder to the container (optional for development)
+      - /snap:/snap  # Mount the /snap directory to access Snap-installed Chromium
+      - /var/lib/snapd:/var/lib/snapd  # Mount the snapd directory to access Snap environment
     environment:
       - NODE_ENV=production
+      - CHROME_BIN=/snap/chromium/current/usr/lib/chromium-browser/chrome
+      - PUPPETEER_SKIP_DOWNLOAD=true
     command: npm start  # Command to run your app

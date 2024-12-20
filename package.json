@@ -2,6 +2,7 @@
   "name": "googlemaps-scrapper",
   "version": "1.0.0",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,14 +12,17 @@
   "description": "",
   "dependencies": {
     "@sparticuz/chromium": "^131.0.1",
+    "aws-sdk": "^2.1692.0",
     "cheerio": "^1.0.0",
     "child_process": "^1.0.2",
+    "chrome-aws-lambda": "^6.0.0",
     "express": "^4.21.2",
     "json2csv": "^6.0.0-alpha.2",
+    "puppeteer-core": "^23.11.1",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "socket.io": "^4.8.1",
-    "chrome-aws-lambda":"^6"
+    "vc": "^0.1.4"
   },
   "devDependencies": {
     "puppeteer": "^23.11.1"
